@@ -5,6 +5,7 @@ import com.tidewater.freight.exception.RateUnavailableException;
 import com.tidewater.freight.exception.TidewaterException;
 import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.model.ZoneRate;
+import com.tidewater.freight.pricing.PricingRule;
 import com.tidewater.freight.rate.RateRepository;
 
 import java.math.BigDecimal;

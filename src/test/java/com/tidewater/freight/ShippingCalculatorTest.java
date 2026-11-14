@@ -3,6 +3,12 @@ package com.tidewater.freight;
 import com.tidewater.freight.model.ServiceLevel;
 import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.model.ZoneRate;
+import com.tidewater.freight.pricing.BasePriceRule;
+import com.tidewater.freight.pricing.DefaultPricingRules;
+import com.tidewater.freight.pricing.HeavyItemSurchargeRule;
+import com.tidewater.freight.pricing.PricingRule;
+import com.tidewater.freight.pricing.ServiceLevelRule;
+import com.tidewater.freight.pricing.ZoneFeeRule;
 import com.tidewater.freight.rate.InMemoryRateRepository;
 import com.tidewater.freight.rate.RateRepository;
 

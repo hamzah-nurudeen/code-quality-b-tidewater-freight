@@ -7,6 +7,9 @@ import com.tidewater.freight.exception.UnknownZoneException;
 import com.tidewater.freight.model.ServiceLevel;
 import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.model.ZoneRate;
+import com.tidewater.freight.pricing.BasePriceRule;
+import com.tidewater.freight.pricing.DefaultPricingRules;
+import com.tidewater.freight.pricing.PricingRule;
 import com.tidewater.freight.rate.InMemoryRateRepository;
 import com.tidewater.freight.rate.RateRepository;
 

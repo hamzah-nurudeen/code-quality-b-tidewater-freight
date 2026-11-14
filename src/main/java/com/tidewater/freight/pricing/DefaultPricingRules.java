@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.pricing;
 
 import java.util.ArrayList;
 import java.util.List;

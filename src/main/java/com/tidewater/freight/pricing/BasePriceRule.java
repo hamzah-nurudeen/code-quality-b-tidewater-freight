@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.pricing;
 
 import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.model.ZoneRate;

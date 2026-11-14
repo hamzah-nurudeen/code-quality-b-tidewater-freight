@@ -3,6 +3,7 @@ package com.tidewater.freight;
 import com.tidewater.freight.exception.UnknownZoneException;
 import com.tidewater.freight.model.ServiceLevel;
 import com.tidewater.freight.model.ShipmentRequest;
+import com.tidewater.freight.pricing.DefaultPricingRules;
 import com.tidewater.freight.rate.InMemoryRateRepository;
 
 // Runs the calculator on sample shipments and shows that an unknown zone is reported, not priced at 0.

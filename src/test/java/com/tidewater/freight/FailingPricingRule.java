@@ -2,6 +2,7 @@ package com.tidewater.freight;
 
 import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.model.ZoneRate;
+import com.tidewater.freight.pricing.PricingRule;
 
 import java.math.BigDecimal;
 
