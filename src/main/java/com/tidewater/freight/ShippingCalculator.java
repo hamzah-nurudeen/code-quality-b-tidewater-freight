@@ -1,39 +1,43 @@
 package com.tidewater.freight;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+// Prices a shipment by looking up its zone rate and running the pricing rules in order.
 public class ShippingCalculator {
 
-    // The calculator makes its own rate source, so callers and tests cannot give it another.
-    private final RateRepository repository = new InMemoryRateRepository();
+    private static final int SCALE = 2;
 
-    public double calculateCost(String zone, double weightKg, String serviceLevel) {
+    private final RateRepository repository;
+    private final List<PricingRule> rules;
+
+    public ShippingCalculator(RateRepository repository, List<PricingRule> rules) {
+        this.repository = Objects.requireNonNull(repository, "Rate repository is required");
+        this.rules = new ArrayList<>(Objects.requireNonNull(rules, "Pricing rules are required"));
+    }
+
+    public BigDecimal calculateCost(ShipmentRequest request) {
+        if (request == null) {
+            throw new InvalidShipmentException("Request is required");
+        }
+        ZoneRate zoneRate = findRateSafely(request.getZone());
+        BigDecimal cost = BigDecimal.ZERO;
+        for (PricingRule rule : rules) {
+            cost = rule.apply(request, zoneRate, cost);
+        }
+        return cost.setScale(SCALE, RoundingMode.HALF_UP);
+    }
+
+    private ZoneRate findRateSafely(String zone) {
         try {
-            double rate = repository.findRate(zone).getRatePerKg().doubleValue();
-            double cost = rate * weightKg;
-
-            // zone-specific fees
-            if (zone.equals("DOMESTIC")) {
-                // no extra fee
-            } else if (zone.equals("REGIONAL")) {
-                cost = cost + 10; // handling fee
-            } else if (zone.equals("INTERNATIONAL")) {
-                cost = cost + 25; // customs handling
-            }
-
-            // heavy-item surcharge
-            if (weightKg > 30) {
-                cost = cost + 20;
-            }
-
-            // express costs more
-            if (serviceLevel.equals("EXPRESS")) {
-                cost = cost * 1.5;
-            }
-
-            System.out.println("Shipping " + zone + " (" + weightKg + "kg, " + serviceLevel + "): GHS " + cost);
-            return cost;
-        } catch (Exception e) {
-            // could not work out a rate (for example an unknown zone) - return zero
-            return 0;
+            return repository.findRate(zone);
+        } catch (TidewaterException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw new RateUnavailableException("Could not load rate for zone: " + zone, e);
         }
     }
 }
