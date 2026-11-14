@@ -13,6 +13,24 @@ actually wrong with the code **and** its tests, refactor it, make it genuinely
 testable, handle its failures properly, and replace the tests that only look
 like tests.
 
+## Refactored solution
+
+- [ANALYSIS.md](ANALYSIS.md): what was wrong with the code and the tests, ranked.
+- [RATIONALE.md](RATIONALE.md): the design decisions, how a new zone is added, and the improvement beyond the brief.
+
+## How to run
+
+Requires JDK 21 or newer and Maven 3.9+.
+
+```bash
+mvn test                                                    # full JUnit 5 + Mockito suite
+mvn test-compile org.pitest:pitest-maven:mutationCoverage   # mutation testing, fails below 85%
+mvn compile exec:java -Dexec.mainClass=com.tidewater.freight.Demo
+```
+
+Without the exec plugin, run the demo with `java -cp target/classes com.tidewater.freight.Demo`
+after `mvn compile`. It prints two quotes and a clear `Unknown zone: MOON` error (not `0.0`).
+
 ## Running it
 
 You need JDK 21 and Maven.
