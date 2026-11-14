@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.model;
 
 import com.tidewater.freight.exception.InvalidShipmentException;
 import com.tidewater.freight.exception.InvalidWeightException;

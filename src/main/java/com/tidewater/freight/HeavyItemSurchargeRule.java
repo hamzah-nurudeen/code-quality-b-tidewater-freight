@@ -1,5 +1,8 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.model.ShipmentRequest;
+import com.tidewater.freight.model.ZoneRate;
+
 import java.math.BigDecimal;
 
 // Adds a fixed surcharge for shipments heavier than the heavy-item threshold.

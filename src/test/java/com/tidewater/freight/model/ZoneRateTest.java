@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.model;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,6 +1,7 @@
 package com.tidewater.freight;
 
 import com.tidewater.freight.exception.UnknownZoneException;
+import com.tidewater.freight.model.ZoneRate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

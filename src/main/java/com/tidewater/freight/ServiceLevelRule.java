@@ -1,5 +1,8 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.model.ShipmentRequest;
+import com.tidewater.freight.model.ZoneRate;
+
 import java.math.BigDecimal;
 
 // Multiplies the running cost by the shipment's service-level multiplier.

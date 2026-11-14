@@ -3,6 +3,8 @@ package com.tidewater.freight;
 import com.tidewater.freight.exception.InvalidShipmentException;
 import com.tidewater.freight.exception.RateUnavailableException;
 import com.tidewater.freight.exception.TidewaterException;
+import com.tidewater.freight.model.ShipmentRequest;
+import com.tidewater.freight.model.ZoneRate;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

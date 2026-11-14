@@ -1,5 +1,8 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.model.ShipmentRequest;
+import com.tidewater.freight.model.ZoneRate;
+
 import java.math.BigDecimal;
 
 // Test double: a pricing rule that always fails, used to prove rule failures reach the caller.

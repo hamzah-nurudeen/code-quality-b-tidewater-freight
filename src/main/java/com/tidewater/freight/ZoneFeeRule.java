@@ -1,5 +1,8 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.model.ShipmentRequest;
+import com.tidewater.freight.model.ZoneRate;
+
 import java.math.BigDecimal;
 
 // Adds the zone's flat fee to the running cost.
