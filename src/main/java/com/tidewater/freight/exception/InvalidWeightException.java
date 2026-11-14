@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.exception;
 
 // Signals that a shipment weight is not a positive finite number.
 public class InvalidWeightException extends TidewaterException {

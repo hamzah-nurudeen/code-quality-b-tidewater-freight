@@ -1,5 +1,8 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.InvalidShipmentException;
+import com.tidewater.freight.exception.InvalidWeightException;
+
 // Carries one validated shipment to be priced; invalid input cannot be constructed.
 public class ShipmentRequest {
 

@@ -1,5 +1,9 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.InvalidShipmentException;
+import com.tidewater.freight.exception.RateUnavailableException;
+import com.tidewater.freight.exception.TidewaterException;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;

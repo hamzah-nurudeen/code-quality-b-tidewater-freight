@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.exception;
 
 // Signals that a shipment was requested for a zone that has no rate.
 public class UnknownZoneException extends TidewaterException {

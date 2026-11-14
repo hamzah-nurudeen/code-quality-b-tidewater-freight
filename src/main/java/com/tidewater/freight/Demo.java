@@ -1,5 +1,7 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.UnknownZoneException;
+
 // Runs the calculator on sample shipments and shows that an unknown zone is reported, not priced at 0.
 public class Demo {
 

@@ -1,4 +1,4 @@
-package com.tidewater.freight;
+package com.tidewater.freight.exception;
 
 // Base type for every failure the shipping service reports to its callers.
 public class TidewaterException extends RuntimeException {

@@ -1,5 +1,7 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.InvalidShipmentException;
+
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

@@ -1,5 +1,7 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.UnknownZoneException;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;

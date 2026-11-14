@@ -1,5 +1,8 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.InvalidShipmentException;
+import com.tidewater.freight.exception.InvalidWeightException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

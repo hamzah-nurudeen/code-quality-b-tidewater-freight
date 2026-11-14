@@ -1,5 +1,7 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.InvalidShipmentException;
+
 import java.math.BigDecimal;
 
 // Lists the allowed service levels and the price multiplier each one applies.

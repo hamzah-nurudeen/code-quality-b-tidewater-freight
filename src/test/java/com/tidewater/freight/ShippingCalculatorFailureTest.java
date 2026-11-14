@@ -1,5 +1,10 @@
 package com.tidewater.freight;
 
+import com.tidewater.freight.exception.InvalidShipmentException;
+import com.tidewater.freight.exception.InvalidWeightException;
+import com.tidewater.freight.exception.RateUnavailableException;
+import com.tidewater.freight.exception.UnknownZoneException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
