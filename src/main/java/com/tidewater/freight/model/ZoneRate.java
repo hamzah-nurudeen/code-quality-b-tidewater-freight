@@ -3,14 +3,14 @@ package com.tidewater.freight.model;
 import java.math.BigDecimal;
 
 // Holds the per-kg rate and the flat fee of one zone together, so they cannot drift apart.
-public class ZoneRate {
+public final class ZoneRate {
 
     private final String zone;
     private final BigDecimal ratePerKg;
     private final BigDecimal flatFee;
 
     public ZoneRate(String zone, BigDecimal ratePerKg, BigDecimal flatFee) {
-        requirePresent(zone, "Zone");
+        requireValidZone(zone);
         requireNotNegative(ratePerKg, "Rate per kg");
         requireNotNegative(flatFee, "Flat fee");
         this.zone = zone;
@@ -28,6 +28,13 @@ public class ZoneRate {
 
     public BigDecimal getFlatFee() {
         return flatFee;
+    }
+
+    private static void requireValidZone(String zone) {
+        requirePresent(zone, "Zone");
+        if (zone.isBlank()) {
+            throw new IllegalArgumentException("Zone must not be blank");
+        }
     }
 
     private static void requirePresent(Object value, String name) {

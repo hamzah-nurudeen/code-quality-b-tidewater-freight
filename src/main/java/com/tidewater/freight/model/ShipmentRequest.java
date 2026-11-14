@@ -4,7 +4,7 @@ import com.tidewater.freight.exception.InvalidShipmentException;
 import com.tidewater.freight.exception.InvalidWeightException;
 
 // Carries one validated shipment to be priced; invalid input cannot be constructed.
-public class ShipmentRequest {
+public final class ShipmentRequest {
 
     private final String zone;
     private final double weightKg;
@@ -32,7 +32,7 @@ public class ShipmentRequest {
     }
 
     private static void validateZone(String zone) {
-        if (zone == null || zone.trim().isEmpty()) {
+        if (zone == null || zone.isBlank()) {
             throw new InvalidShipmentException("Zone is required");
         }
     }

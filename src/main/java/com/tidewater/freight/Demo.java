@@ -6,24 +6,32 @@ import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.pricing.DefaultPricingRules;
 import com.tidewater.freight.rate.InMemoryRateRepository;
 
+import java.math.BigDecimal;
+
 // Runs the calculator on sample shipments and shows that an unknown zone is reported, not priced at 0.
-public class Demo {
+public final class Demo {
+
+    private static final String CURRENCY = "GHS";
+
+    private Demo() {
+    }
 
     public static void main(String[] args) {
         ShippingCalculator calculator =
                 new ShippingCalculator(new InMemoryRateRepository(), DefaultPricingRules.create());
 
-        ShipmentRequest domestic = new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD);
-        System.out.println("Result DOMESTIC 10kg STANDARD       -> GHS " + calculator.calculateCost(domestic));
+        printQuote(calculator, new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
+        printQuote(calculator, new ShipmentRequest("INTERNATIONAL", 40, ServiceLevel.EXPRESS));
+        printQuote(calculator, new ShipmentRequest("MOON", 10, ServiceLevel.STANDARD));
+    }
 
-        ShipmentRequest international = new ShipmentRequest("INTERNATIONAL", 40, ServiceLevel.EXPRESS);
-        System.out.println("Result INTERNATIONAL 40kg EXPRESS   -> GHS " + calculator.calculateCost(international));
-
+    private static void printQuote(ShippingCalculator calculator, ShipmentRequest request) {
+        String label = "Result " + request.getZone() + " " + (int) request.getWeightKg() + "kg " + request.getServiceLevel();
         try {
-            ShipmentRequest moon = new ShipmentRequest("MOON", 10, ServiceLevel.STANDARD);
-            System.out.println("Result unknown zone MOON 10kg STD   -> GHS " + calculator.calculateCost(moon));
+            BigDecimal cost = calculator.calculateCost(request);
+            System.out.println(label + " -> " + CURRENCY + " " + cost);
         } catch (UnknownZoneException e) {
-            System.out.println("Result unknown zone MOON 10kg STD   -> cannot price shipment: " + e.getMessage());
+            System.out.println(label + " -> cannot price shipment: " + e.getMessage());
         }
     }
 }
