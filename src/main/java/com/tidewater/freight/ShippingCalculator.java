@@ -31,6 +31,10 @@ public final class ShippingCalculator {
      * Calculates the total shipping cost in GHS for a validated shipment request,
      * applying each configured pricing rule in order and rounding once to 2 decimal places
      * using {@link RoundingMode#HALF_UP}.
+     * <p>
+     * Unexpected repository failures are wrapped in {@link RateUnavailableException} with the
+     * original exception preserved as {@link Throwable#getCause()} so the caller or application
+     * boundary can log the failure once with full request context.
      *
      * @param request the validated shipment request to price
      * @return the final shipping cost with scale 2
@@ -54,15 +58,20 @@ public final class ShippingCalculator {
         ZoneRate zoneRate;
         try {
             zoneRate = repository.findRate(zone);
-        } catch (TidewaterException e) {
-            throw e;
         } catch (RuntimeException e) {
-            throw new RateUnavailableException("Could not load rate for zone: " + zone, e);
+            throw translateRepositoryFailure(zone, e);
         }
         if (zoneRate == null) {
             throw new RateUnavailableException("Rate repository returned null for zone: " + zone);
         }
         return zoneRate;
+    }
+
+    private static TidewaterException translateRepositoryFailure(String zone, RuntimeException failure) {
+        if (failure instanceof TidewaterException) {
+            return (TidewaterException) failure;
+        }
+        return new RateUnavailableException("Could not load rate for zone: " + zone, failure);
     }
 
     private static List<PricingRule> validateAndCopyRules(List<PricingRule> rules) {

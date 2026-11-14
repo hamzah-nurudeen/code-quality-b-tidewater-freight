@@ -10,7 +10,6 @@ public class BasePriceRule implements PricingRule {
 
     @Override
     public BigDecimal apply(ShipmentRequest request, ZoneRate zoneRate, BigDecimal currentCost) {
-        BigDecimal weight = BigDecimal.valueOf(request.getWeightKg());
-        return zoneRate.getRatePerKg().multiply(weight);
+        return zoneRate.getRatePerKg().multiply(request.getWeightKg());
     }
 }

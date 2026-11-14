@@ -1,6 +1,6 @@
 package com.tidewater.freight;
 
-import com.tidewater.freight.exception.UnknownZoneException;
+import com.tidewater.freight.exception.TidewaterException;
 import com.tidewater.freight.model.ServiceLevel;
 import com.tidewater.freight.model.ShipmentRequest;
 import com.tidewater.freight.pricing.DefaultPricingRules;
@@ -8,7 +8,7 @@ import com.tidewater.freight.rate.InMemoryRateRepository;
 
 import java.math.BigDecimal;
 
-// Runs the calculator on sample shipments and shows that an unknown zone is reported, not priced at 0.
+// Runs the calculator on sample shipments and shows that domain failures are reported, not priced at 0.
 public final class Demo {
 
     private static final String CURRENCY = "GHS";
@@ -26,12 +26,12 @@ public final class Demo {
     }
 
     private static void printQuote(ShippingCalculator calculator, ShipmentRequest request) {
-        String weight = BigDecimal.valueOf(request.getWeightKg()).stripTrailingZeros().toPlainString();
+        String weight = request.getWeightKg().stripTrailingZeros().toPlainString();
         String label = "Result " + request.getZone() + " " + weight + "kg " + request.getServiceLevel();
         try {
             BigDecimal cost = calculator.calculateCost(request);
             System.out.println(label + " -> " + CURRENCY + " " + cost);
-        } catch (UnknownZoneException e) {
+        } catch (TidewaterException e) {
             System.out.println(label + " -> cannot price shipment: " + e.getMessage());
         }
     }
