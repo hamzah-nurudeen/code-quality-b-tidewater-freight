@@ -44,6 +44,10 @@ zone), 3. the hollow tests, then C2, C5, C4 and C6.
 - **Null request throws `InvalidShipmentException`** (not `NullPointerException`), so every bad-input case
   from the calculator's public method is one of our own types. A null constructor dependency is a wiring
   bug, so it throws `NullPointerException` through `Objects.requireNonNull`.
+- **Sub-packages under `com.tidewater.freight`.** The classes are grouped into `exception`, `model`,
+  `rate` and `pricing`, with `ShippingCalculator` and `Demo` at the root. Lower packages never import
+  higher ones (`exception` ← `model` ← `rate` / `pricing` ← root). Adding a zone touches only `rate`,
+  and adding a kind of charge touches only `pricing`.
 
 ## 2. How the design absorbs the new zone
 
