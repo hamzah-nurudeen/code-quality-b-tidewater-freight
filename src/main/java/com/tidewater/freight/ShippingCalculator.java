@@ -60,7 +60,7 @@ public final class ShippingCalculator {
             throw new RateUnavailableException("Could not load rate for zone: " + zone, e);
         }
         if (zoneRate == null) {
-            throw new RateUnavailableException("Rate repository returned null for zone: " + zone, null);
+            throw new RateUnavailableException("Rate repository returned null for zone: " + zone);
         }
         return zoneRate;
     }

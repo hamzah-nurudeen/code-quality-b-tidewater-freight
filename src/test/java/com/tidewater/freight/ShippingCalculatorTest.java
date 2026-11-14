@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -101,25 +99,14 @@ class ShippingCalculatorTest {
     }
 
     @Test
-    void defaultPricingRulesAreInExpectedOrderWithServiceLevelLast() {
-        List<PricingRule> rules = DefaultPricingRules.create();
-
-        assertEquals(4, rules.size());
-        assertTrue(rules.get(0) instanceof BasePriceRule);
-        assertTrue(rules.get(1) instanceof ZoneFeeRule);
-        assertTrue(rules.get(2) instanceof HeavyItemSurchargeRule);
-        assertTrue(rules.get(3) instanceof ServiceLevelRule);
-        assertThrows(UnsupportedOperationException.class, () -> rules.add(new BasePriceRule()));
-    }
-
-    @Test
     void modifyingInputRuleListAfterConstructionDoesNotAffectCalculator() {
         when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
         List<PricingRule> mutableRules = new ArrayList<>(DefaultPricingRules.create());
         ShippingCalculator isolatedCalculator = new ShippingCalculator(repository, mutableRules);
+        ShipmentRequest request = new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD);
 
         mutableRules.clear();
-        BigDecimal result = isolatedCalculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
+        BigDecimal result = isolatedCalculator.calculateCost(request);
 
         assertEquals(new BigDecimal("50.00"), result);
     }

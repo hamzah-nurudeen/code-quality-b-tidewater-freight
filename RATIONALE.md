@@ -1,10 +1,7 @@
 # Rationale: Tidewater Freight Refactor
 
 This document explains the architectural and design decisions behind the refactored service.
-The defects in the starter code and tests are diagnosed in [ANALYSIS.md](ANALYSIS.md).
-
-**Priority order of the fixes:** 1. C1 (swallowed exception), 2. C3 (split rate rules that block the new
-zone), 3. the hollow tests, then C2, C5, C4 and C6.
+The defects in the starter code and tests (and their [priority ranking](ANALYSIS.md#ranking)) are diagnosed in [ANALYSIS.md](ANALYSIS.md).
 
 ## 1. Key decisions
 
@@ -53,7 +50,7 @@ zone), 3. the hollow tests, then C2, C5, C4 and C6.
 - **The express rule must be last.** The business rule (kept from the original) is that express multiplies
   everything accumulated so far, including the zone fee and the heavy surcharge. `DefaultPricingRules.create()`
   returns an unmodifiable list in that exact order, verified both by
-  `ShippingCalculatorTest.defaultPricingRulesAreInExpectedOrderWithServiceLevelLast` and by
+  `DefaultPricingRulesTest.defaultPricingRulesAreInExpectedOrderWithServiceLevelLast` and by
   `ShippingCalculatorTest.ruleOrderMattersExpressMustComeAfterFee` (`75.00` vs `70.00`).
 - **Sub-packages under `com.tidewater.freight`.** Classes are grouped into `exception`, `model`, `rate`,
   and `pricing`, with `ShippingCalculator` and `Demo` at the root. Lower packages never import higher ones

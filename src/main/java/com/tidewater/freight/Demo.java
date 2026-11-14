@@ -26,7 +26,8 @@ public final class Demo {
     }
 
     private static void printQuote(ShippingCalculator calculator, ShipmentRequest request) {
-        String label = "Result " + request.getZone() + " " + (int) request.getWeightKg() + "kg " + request.getServiceLevel();
+        String weight = BigDecimal.valueOf(request.getWeightKg()).stripTrailingZeros().toPlainString();
+        String label = "Result " + request.getZone() + " " + weight + "kg " + request.getServiceLevel();
         try {
             BigDecimal cost = calculator.calculateCost(request);
             System.out.println(label + " -> " + CURRENCY + " " + cost);
