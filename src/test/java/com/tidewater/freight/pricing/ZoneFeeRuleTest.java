@@ -15,7 +15,7 @@ class ZoneFeeRuleTest {
     private final ZoneFeeRule rule = new ZoneFeeRule();
 
     @Test
-    void feeTenAddedToFortyIsFifty() {
+    void flatFeeIsAddedToRunningCost() {
         ZoneRate zoneRate = new ZoneRate("REGIONAL", new BigDecimal("8"), new BigDecimal("10"));
         ShipmentRequest request = new ShipmentRequest("REGIONAL", 5, ServiceLevel.STANDARD);
 

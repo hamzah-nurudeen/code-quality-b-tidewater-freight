@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,30 +23,43 @@ class InMemoryRateRepositoryTest {
     }
 
     @Test
-    void domesticHasRateFiveAndNoFee() {
+    void domesticHasConfiguredRateAndZeroFee() {
         ZoneRate zoneRate = repository.findRate("DOMESTIC");
 
         assertEquals("DOMESTIC", zoneRate.getZone());
-        assertEquals(new BigDecimal("5"), zoneRate.getRatePerKg());
-        assertEquals(new BigDecimal("0"), zoneRate.getFlatFee());
+        assertAmount("5", zoneRate.getRatePerKg());
+        assertAmount("0", zoneRate.getFlatFee());
     }
 
     @Test
-    void regionalHasRateEightAndFeeTen() {
+    void regionalHasConfiguredRateAndFee() {
         ZoneRate zoneRate = repository.findRate("REGIONAL");
 
         assertEquals("REGIONAL", zoneRate.getZone());
-        assertEquals(new BigDecimal("8"), zoneRate.getRatePerKg());
-        assertEquals(new BigDecimal("10"), zoneRate.getFlatFee());
+        assertAmount("8", zoneRate.getRatePerKg());
+        assertAmount("10", zoneRate.getFlatFee());
     }
 
     @Test
-    void internationalHasRateFifteenAndFeeTwentyFive() {
+    void internationalHasConfiguredRateAndFee() {
         ZoneRate zoneRate = repository.findRate("INTERNATIONAL");
 
         assertEquals("INTERNATIONAL", zoneRate.getZone());
-        assertEquals(new BigDecimal("15"), zoneRate.getRatePerKg());
-        assertEquals(new BigDecimal("25"), zoneRate.getFlatFee());
+        assertAmount("15", zoneRate.getRatePerKg());
+        assertAmount("25", zoneRate.getFlatFee());
+    }
+
+    @Test
+    void customRatesMapCanBeSuppliedToConstructor() {
+        Map<String, ZoneRate> customRates = new HashMap<>();
+        customRates.put("COASTAL", new ZoneRate("COASTAL", new BigDecimal("12"), new BigDecimal("5")));
+        InMemoryRateRepository customRepository = new InMemoryRateRepository(customRates);
+
+        ZoneRate zoneRate = customRepository.findRate("COASTAL");
+
+        assertEquals("COASTAL", zoneRate.getZone());
+        assertAmount("12", zoneRate.getRatePerKg());
+        assertAmount("5", zoneRate.getFlatFee());
     }
 
     @Test
@@ -70,5 +85,9 @@ class InMemoryRateRepositoryTest {
                 () -> repository.findRate(null));
 
         assertEquals("Unknown zone: null", e.getMessage());
+    }
+
+    private static void assertAmount(String expected, BigDecimal actual) {
+        assertEquals(0, new BigDecimal(expected).compareTo(actual), "expected " + expected + " but was " + actual);
     }
 }

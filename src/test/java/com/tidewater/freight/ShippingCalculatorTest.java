@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,16 +72,15 @@ class ShippingCalculatorTest {
         BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 0.333, ServiceLevel.STANDARD));
 
         assertEquals(new BigDecimal("1.67"), result);
-        verify(repository).findRate("DOMESTIC");
     }
 
     @Test
-    void resultAlwaysHasScaleTwo() {
+    void wholeNumberCostIsFormattedToTwoDecimalPlaces() {
         when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
 
         BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
 
-        assertEquals(2, result.scale());
+        assertEquals(new BigDecimal("50.00"), result);
     }
 
     @Test

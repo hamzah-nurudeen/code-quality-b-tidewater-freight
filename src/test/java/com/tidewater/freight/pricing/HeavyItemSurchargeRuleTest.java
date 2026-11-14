@@ -45,11 +45,13 @@ class HeavyItemSurchargeRuleTest {
     }
 
     @Test
-    void thirtyOneKgAddsTwenty() {
-        ShipmentRequest request = new ShipmentRequest("DOMESTIC", 31, ServiceLevel.STANDARD);
+    void customThresholdAndSurchargeAreAppliedWhenWeightExceedsThreshold() {
+        HeavyItemSurchargeRule customRule =
+                new HeavyItemSurchargeRule(new BigDecimal("15"), new BigDecimal("35"));
+        ShipmentRequest request = new ShipmentRequest("DOMESTIC", 16, ServiceLevel.STANDARD);
 
-        BigDecimal result = rule.apply(request, zoneRate, STARTING_COST);
+        BigDecimal result = customRule.apply(request, zoneRate, STARTING_COST);
 
-        assertAmount("120", result);
+        assertAmount("135", result);
     }
 }

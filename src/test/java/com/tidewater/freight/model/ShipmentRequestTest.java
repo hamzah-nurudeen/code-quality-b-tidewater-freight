@@ -5,6 +5,8 @@ import com.tidewater.freight.exception.InvalidWeightException;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,7 +19,7 @@ class ShipmentRequestTest {
         ShipmentRequest request = new ShipmentRequest("REGIONAL", 12.5, ServiceLevel.EXPRESS);
 
         assertEquals("REGIONAL", request.getZone());
-        assertEquals(12.5, request.getWeightKg());
+        assertEquals(0, new BigDecimal("12.5").compareTo(request.getWeightKg()));
         assertEquals(ServiceLevel.EXPRESS, request.getServiceLevel());
     }
 
@@ -70,6 +72,22 @@ class ShipmentRequestTest {
     }
 
     @Test
+    void nullBigDecimalWeightIsRejected() {
+        InvalidWeightException e = assertThrows(InvalidWeightException.class,
+                () -> new ShipmentRequest("DOMESTIC", null, ServiceLevel.STANDARD));
+
+        assertEquals(WEIGHT_MESSAGE + "null", e.getMessage());
+    }
+
+    @Test
+    void zeroBigDecimalWeightIsRejected() {
+        InvalidWeightException e = assertThrows(InvalidWeightException.class,
+                () -> new ShipmentRequest("DOMESTIC", BigDecimal.ZERO, ServiceLevel.STANDARD));
+
+        assertEquals(WEIGHT_MESSAGE + "0", e.getMessage());
+    }
+
+    @Test
     void notANumberWeightIsRejected() {
         InvalidWeightException e = assertThrows(InvalidWeightException.class,
                 () -> new ShipmentRequest("DOMESTIC", Double.NaN, ServiceLevel.STANDARD));
@@ -95,9 +113,9 @@ class ShipmentRequestTest {
 
     @Test
     void verySmallPositiveWeightIsAccepted() {
-        ShipmentRequest request = new ShipmentRequest("DOMESTIC", 0.001, ServiceLevel.STANDARD);
+        ShipmentRequest request = new ShipmentRequest("DOMESTIC", new BigDecimal("0.001"), ServiceLevel.STANDARD);
 
-        assertEquals(0.001, request.getWeightKg());
+        assertEquals(0, new BigDecimal("0.001").compareTo(request.getWeightKg()));
     }
 
     @Test
