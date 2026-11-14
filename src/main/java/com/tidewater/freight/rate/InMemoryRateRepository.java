@@ -6,16 +6,22 @@ import com.tidewater.freight.model.ZoneRate;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-// Keeps the zone rates in memory; a new zone is one more addZone line in the constructor.
+// Keeps the zone rates in memory, loaded from external configuration or supplied via constructor.
 public class InMemoryRateRepository implements RateRepository {
 
-    private final Map<String, ZoneRate> rates = new HashMap<>();
+    private static final String DEFAULT_RATES_BUNDLE = "rates";
+
+    private final Map<String, ZoneRate> rates;
 
     public InMemoryRateRepository() {
-        addZone("DOMESTIC", "5", "0");
-        addZone("REGIONAL", "8", "10");
-        addZone("INTERNATIONAL", "15", "25");
+        this(loadRatesFromBundle(DEFAULT_RATES_BUNDLE));
+    }
+
+    public InMemoryRateRepository(Map<String, ZoneRate> rates) {
+        this.rates = new HashMap<>(Objects.requireNonNull(rates, "Rates map is required"));
     }
 
     @Override
@@ -27,7 +33,13 @@ public class InMemoryRateRepository implements RateRepository {
         return zoneRate;
     }
 
-    private void addZone(String zone, String ratePerKg, String flatFee) {
-        rates.put(zone, new ZoneRate(zone, new BigDecimal(ratePerKg), new BigDecimal(flatFee)));
+    private static Map<String, ZoneRate> loadRatesFromBundle(String bundleName) {
+        ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
+        Map<String, ZoneRate> loaded = new HashMap<>();
+        for (String zone : bundle.keySet()) {
+            String[] parts = bundle.getString(zone).split(",");
+            loaded.put(zone, new ZoneRate(zone, new BigDecimal(parts[0].trim()), new BigDecimal(parts[1].trim())));
+        }
+        return loaded;
     }
 }
