@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.amalitech.training</groupId>
+    <groupId>com.tidewater.freight</groupId>
     <artifactId>tidewater-freight</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
@@ -70,6 +70,14 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
+                <configuration>
+                    <includes>
+                        <include>com/tidewater/freight/**</include>
+                    </includes>
+                    <excludes>
+                        <exclude>com/tidewater/freight/Demo.*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -80,10 +88,29 @@
                         <phase>verify</phase>
                         <goals><goal>report</goal></goals>
                     </execution>
+                    <execution>
+                        <id>check</id>
+                        <phase>verify</phase>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.90</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
-            <!-- Mutation testing: mvn test-compile org.pitest:pitest-maven:mutationCoverage
+            <!-- Mutation testing: runs on mvn verify (or mvn test-compile org.pitest:pitest-maven:mutationCoverage)
                  then open target/pit-reports/index.html -->
             <plugin>
                 <groupId>org.pitest</groupId>
@@ -107,8 +134,17 @@
                         <param>com.tidewater.freight.Demo</param>
                     </excludedClasses>
                     <!-- Fail the build if the tests stop killing mutants (the original suite was green but empty). -->
-                    <mutationThreshold>85</mutationThreshold>
+                    <mutationThreshold>95</mutationThreshold>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>pit-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>mutationCoverage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
