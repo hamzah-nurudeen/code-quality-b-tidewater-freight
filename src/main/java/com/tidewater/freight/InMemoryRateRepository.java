@@ -1,24 +1,30 @@
 package com.tidewater.freight;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+// Keeps the zone rates in memory; a new zone is one more addZone line in the constructor.
 public class InMemoryRateRepository implements RateRepository {
 
-    private final Map<String, Double> rates = new HashMap<>();
+    private final Map<String, ZoneRate> rates = new HashMap<>();
 
     public InMemoryRateRepository() {
-        rates.put("DOMESTIC", 5.0);
-        rates.put("REGIONAL", 8.0);
-        rates.put("INTERNATIONAL", 15.0);
+        addZone("DOMESTIC", "5", "0");
+        addZone("REGIONAL", "8", "10");
+        addZone("INTERNATIONAL", "15", "25");
     }
 
     @Override
-    public double findRate(String zone) {
-        Double rate = rates.get(zone);
-        if (rate == null) {
-            throw new IllegalArgumentException("Unknown zone: " + zone);
+    public ZoneRate findRate(String zone) {
+        ZoneRate zoneRate = rates.get(zone);
+        if (zoneRate == null) {
+            throw new UnknownZoneException(zone);
         }
-        return rate;
+        return zoneRate;
+    }
+
+    private void addZone(String zone, String ratePerKg, String flatFee) {
+        rates.put(zone, new ZoneRate(zone, new BigDecimal(ratePerKg), new BigDecimal(flatFee)));
     }
 }

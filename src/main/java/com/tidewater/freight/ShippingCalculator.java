@@ -7,7 +7,7 @@ public class ShippingCalculator {
 
     public double calculateCost(String zone, double weightKg, String serviceLevel) {
         try {
-            double rate = repository.findRate(zone);
+            double rate = repository.findRate(zone).getRatePerKg().doubleValue();
             double cost = rate * weightKg;
 
             // zone-specific fees
