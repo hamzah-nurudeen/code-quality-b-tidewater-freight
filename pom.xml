@@ -103,6 +103,11 @@
                     <targetTests>
                         <param>com.tidewater.freight.*</param>
                     </targetTests>
+                    <excludedClasses>
+                        <param>com.tidewater.freight.Demo</param>
+                    </excludedClasses>
+                    <!-- Fail the build if the tests stop killing mutants (the original suite was green but empty). -->
+                    <mutationThreshold>85</mutationThreshold>
                 </configuration>
             </plugin>
         </plugins>
