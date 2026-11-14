@@ -25,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,8 +35,6 @@ class ShippingCalculatorTest {
 
     private static final ZoneRate DOMESTIC = new ZoneRate("DOMESTIC", new BigDecimal("5"), new BigDecimal("0"));
     private static final ZoneRate REGIONAL = new ZoneRate("REGIONAL", new BigDecimal("8"), new BigDecimal("10"));
-    private static final ZoneRate INTERNATIONAL =
-            new ZoneRate("INTERNATIONAL", new BigDecimal("15"), new BigDecimal("25"));
 
     @Mock
     RateRepository repository;
@@ -45,89 +44,6 @@ class ShippingCalculatorTest {
     @BeforeEach
     void setUp() {
         calculator = new ShippingCalculator(repository, DefaultPricingRules.create());
-    }
-
-    @Test
-    void domesticTenKgStandardCosts50() {
-        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
-
-        assertEquals(new BigDecimal("50.00"), result);
-        verify(repository).findRate("DOMESTIC");
-    }
-
-    @Test
-    void regionalFiveKgStandardCosts50IncludingFee() {
-        when(repository.findRate("REGIONAL")).thenReturn(REGIONAL);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("REGIONAL", 5, ServiceLevel.STANDARD));
-
-        assertEquals(new BigDecimal("50.00"), result);
-    }
-
-    @Test
-    void domesticTenKgExpressCosts75() {
-        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.EXPRESS));
-
-        assertEquals(new BigDecimal("75.00"), result);
-    }
-
-    @Test
-    void domesticExactlyThirtyKgStandardCosts150WithoutSurcharge() {
-        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 30, ServiceLevel.STANDARD));
-
-        assertEquals(new BigDecimal("150.00"), result);
-    }
-
-    @Test
-    void domesticThirtyOneKgStandardCosts175WithSurcharge() {
-        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 31, ServiceLevel.STANDARD));
-
-        assertEquals(new BigDecimal("175.00"), result);
-    }
-
-    @Test
-    void regionalThirtyOneKgExpressCosts417() {
-        when(repository.findRate("REGIONAL")).thenReturn(REGIONAL);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("REGIONAL", 31, ServiceLevel.EXPRESS));
-
-        assertEquals(new BigDecimal("417.00"), result);
-    }
-
-    @Test
-    void internationalFortyKgExpressCosts967point50() {
-        when(repository.findRate("INTERNATIONAL")).thenReturn(INTERNATIONAL);
-
-        BigDecimal result =
-                calculator.calculateCost(new ShipmentRequest("INTERNATIONAL", 40, ServiceLevel.EXPRESS));
-
-        assertEquals(new BigDecimal("967.50"), result);
-    }
-
-    @Test
-    void costIsRoundedHalfUpToTwoDecimals() {
-        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 0.333, ServiceLevel.STANDARD));
-
-        assertEquals(new BigDecimal("1.67"), result);
-    }
-
-    @Test
-    void resultAlwaysHasScaleTwo() {
-        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
-
-        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
-
-        assertEquals(2, result.scale());
     }
 
     // End-to-end table: real InMemoryRateRepository data plus the default rules. A new zone is one more row.
@@ -153,6 +69,25 @@ class ShippingCalculatorTest {
     }
 
     @Test
+    void costIsRoundedHalfUpToTwoDecimals() {
+        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
+
+        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 0.333, ServiceLevel.STANDARD));
+
+        assertEquals(new BigDecimal("1.67"), result);
+        verify(repository).findRate("DOMESTIC");
+    }
+
+    @Test
+    void resultAlwaysHasScaleTwo() {
+        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
+
+        BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
+
+        assertEquals(2, result.scale());
+    }
+
+    @Test
     void ruleOrderMattersExpressMustComeAfterFee() {
         when(repository.findRate("REGIONAL")).thenReturn(REGIONAL);
         ShipmentRequest request = new ShipmentRequest("REGIONAL", 5, ServiceLevel.EXPRESS);
@@ -163,7 +98,30 @@ class ShippingCalculatorTest {
 
         assertEquals(new BigDecimal("75.00"), defaultOrder);
         assertEquals(new BigDecimal("70.00"), wrongOrder);
-        assertNotEquals(defaultOrder, wrongOrder);
+    }
+
+    @Test
+    void defaultPricingRulesAreInExpectedOrderWithServiceLevelLast() {
+        List<PricingRule> rules = DefaultPricingRules.create();
+
+        assertEquals(4, rules.size());
+        assertTrue(rules.get(0) instanceof BasePriceRule);
+        assertTrue(rules.get(1) instanceof ZoneFeeRule);
+        assertTrue(rules.get(2) instanceof HeavyItemSurchargeRule);
+        assertTrue(rules.get(3) instanceof ServiceLevelRule);
+        assertThrows(UnsupportedOperationException.class, () -> rules.add(new BasePriceRule()));
+    }
+
+    @Test
+    void modifyingInputRuleListAfterConstructionDoesNotAffectCalculator() {
+        when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
+        List<PricingRule> mutableRules = new ArrayList<>(DefaultPricingRules.create());
+        ShippingCalculator isolatedCalculator = new ShippingCalculator(repository, mutableRules);
+
+        mutableRules.clear();
+        BigDecimal result = isolatedCalculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
+
+        assertEquals(new BigDecimal("50.00"), result);
     }
 
     private static List<PricingRule> serviceLevelBeforeFeeRules() {

@@ -27,6 +27,22 @@ class ZoneRateTest {
     }
 
     @Test
+    void blankZoneIsRejected() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> new ZoneRate("   ", new BigDecimal("8"), new BigDecimal("10")));
+
+        assertEquals("Zone must not be blank", e.getMessage());
+    }
+
+    @Test
+    void emptyZoneIsRejected() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                () -> new ZoneRate("", new BigDecimal("8"), new BigDecimal("10")));
+
+        assertEquals("Zone must not be blank", e.getMessage());
+    }
+
+    @Test
     void nullRateIsRejected() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> new ZoneRate("REGIONAL", null, new BigDecimal("10")));

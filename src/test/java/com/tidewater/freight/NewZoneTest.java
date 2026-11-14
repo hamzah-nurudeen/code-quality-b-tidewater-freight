@@ -43,6 +43,15 @@ class NewZoneTest {
     }
 
     @Test
+    void arcticAtExactHeavyBoundary30KgStandardHasNoSurcharge() {
+        when(repository.findRate("ARCTIC")).thenReturn(ARCTIC);
+
+        BigDecimal result = calculator.calculateCost(new ShipmentRequest("ARCTIC", 30, ServiceLevel.STANDARD));
+
+        assertEquals(new BigDecimal("640.00"), result);
+    }
+
+    @Test
     void arcticThirtyFiveKgExpressCosts1140() {
         when(repository.findRate("ARCTIC")).thenReturn(ARCTIC);
 

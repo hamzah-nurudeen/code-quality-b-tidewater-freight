@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static com.tidewater.freight.pricing.MoneyAssertions.assertAmount;
 
 class ServiceLevelRuleTest {
 
@@ -33,9 +33,5 @@ class ServiceLevelRuleTest {
         BigDecimal result = rule.apply(request, zoneRate, STARTING_COST);
 
         assertAmount("150", result);
-    }
-
-    private static void assertAmount(String expected, BigDecimal actual) {
-        assertEquals(0, new BigDecimal(expected).compareTo(actual), "expected " + expected + " but was " + actual);
     }
 }

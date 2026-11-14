@@ -72,6 +72,17 @@ class ShippingCalculatorFailureTest {
     }
 
     @Test
+    void repositoryReturningNullThrowsRateUnavailableException() {
+        when(repository.findRate("DOMESTIC")).thenReturn(null);
+        ShipmentRequest request = new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD);
+
+        RateUnavailableException thrown =
+                assertThrows(RateUnavailableException.class, () -> calculator.calculateCost(request));
+
+        assertEquals("Rate repository returned null for zone: DOMESTIC", thrown.getMessage());
+    }
+
+    @Test
     void nullRequestIsRejected() {
         InvalidShipmentException thrown =
                 assertThrows(InvalidShipmentException.class, () -> calculator.calculateCost(null));
@@ -99,6 +110,28 @@ class ShippingCalculatorFailureTest {
     }
 
     @Test
+    void emptyRuleListIsRejected() {
+        List<PricingRule> emptyRules = new ArrayList<>();
+
+        IllegalArgumentException thrown =
+                assertThrows(IllegalArgumentException.class, () -> new ShippingCalculator(repository, emptyRules));
+
+        assertEquals("At least one pricing rule is required", thrown.getMessage());
+    }
+
+    @Test
+    void ruleListContainingNullElementIsRejected() {
+        List<PricingRule> rulesWithNull = new ArrayList<>();
+        rulesWithNull.add(new BasePriceRule());
+        rulesWithNull.add(null);
+
+        NullPointerException thrown =
+                assertThrows(NullPointerException.class, () -> new ShippingCalculator(repository, rulesWithNull));
+
+        assertEquals("Pricing rule must not be null", thrown.getMessage());
+    }
+
+    @Test
     void failingRuleReachesCallerInsteadOfZero() {
         when(repository.findRate("DOMESTIC")).thenReturn(DOMESTIC);
         List<PricingRule> rules = new ArrayList<>();
@@ -114,12 +147,11 @@ class ShippingCalculatorFailureTest {
     }
 
     @Test
-    void invalidWeightIsRejectedBeforeRepositoryIsUsed() {
+    void invalidWeightIsRejectedAtRequestConstruction() {
         InvalidWeightException thrown = assertThrows(InvalidWeightException.class,
                 () -> new ShipmentRequest("DOMESTIC", -5, ServiceLevel.STANDARD));
 
         assertEquals("Weight must be a positive finite number but was: -5.0", thrown.getMessage());
-        verifyNoInteractions(repository);
     }
 
     @Test
