@@ -3,6 +3,8 @@ package com.tidewater.freight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -114,6 +116,28 @@ class ShippingCalculatorTest {
         BigDecimal result = calculator.calculateCost(new ShipmentRequest("DOMESTIC", 10, ServiceLevel.STANDARD));
 
         assertEquals(2, result.scale());
+    }
+
+    // End-to-end table: real InMemoryRateRepository data plus the default rules. A new zone is one more row.
+    @ParameterizedTest(name = "{0} {1}kg {2} costs {3}")
+    @CsvSource({
+            "DOMESTIC,      10,    STANDARD, 50.00",
+            "REGIONAL,      5,     STANDARD, 50.00",
+            "DOMESTIC,      10,    EXPRESS,  75.00",
+            "DOMESTIC,      30,    STANDARD, 150.00",
+            "DOMESTIC,      31,    STANDARD, 175.00",
+            "REGIONAL,      31,    EXPRESS,  417.00",
+            "INTERNATIONAL, 40,    EXPRESS,  967.50",
+            "DOMESTIC,      0.333, STANDARD, 1.67"
+    })
+    void costTableMatchesReferenceValues(String zone, double weightKg, String level, String expectedCost) {
+        ShippingCalculator realCalculator =
+                new ShippingCalculator(new InMemoryRateRepository(), DefaultPricingRules.create());
+        ShipmentRequest request = new ShipmentRequest(zone, weightKg, ServiceLevel.fromText(level));
+
+        BigDecimal result = realCalculator.calculateCost(request);
+
+        assertEquals(new BigDecimal(expectedCost), result);
     }
 
     @Test
