@@ -5,34 +5,37 @@ Repository: <https://github.com/hamzah-nurudeen/code-quality-b-tidewater-freight
 This repository contains the refactored, SOLID-compliant **Tidewater Freight** shipping cost service in Java 21, together with its JUnit 5 + Mockito test suite, JaCoCo coverage gate, and PIT mutation-testing gate.
 
 - **[ANALYSIS.md](ANALYSIS.md):** Four-part defect diagnosis of the original AI-generated code and tests, ranked by severity, with the verbatim starter code preserved in an appendix (and in initial commit `5710d7a`).
-- **[RATIONALE.md](RATIONALE.md):** Key architectural decisions, how the design absorbs new zones without modifying existing classes, kept/fixed/rewrote summary, and verified PIT mutation results (49/49 mutants killed, 100%).
+- **[RATIONALE.md](RATIONALE.md):** Key architectural decisions, how the design absorbs new zones without modifying existing classes, kept/fixed/rewrote summary, and verified PIT mutation results (52/52 mutants killed, 100%).
 
 ## Architecture Overview
 
 ```
-src/main/java/com/tidewater/freight/
-├── ShippingCalculator.java          # Orchestrates rate lookup, ordered pricing rules, and HALF_UP rounding
-├── Demo.java                        # Console entry point demonstrating valid quotes and unknown-zone failure
-├── exception/                       # Unchecked domain exception hierarchy rooted at TidewaterException
-│   ├── TidewaterException.java
-│   ├── UnknownZoneException.java
-│   ├── InvalidWeightException.java
-│   ├── InvalidShipmentException.java
-│   └── RateUnavailableException.java
-├── model/                           # Immutable, self-validating value types
-│   ├── ServiceLevel.java
-│   ├── ShipmentRequest.java
-│   └── ZoneRate.java
-├── rate/                            # Rate lookup port and in-memory adapter
-│   ├── RateRepository.java
-│   └── InMemoryRateRepository.java
-└── pricing/                         # Single-responsibility pricing rules and default pipeline factory
-    ├── PricingRule.java
-    ├── DefaultPricingRules.java
-    ├── BasePriceRule.java
-    ├── ZoneFeeRule.java
-    ├── HeavyItemSurchargeRule.java
-    └── ServiceLevelRule.java
+src/main/
+├── resources/
+│   └── rates.properties             # Externalized zone rates (ZONE = ratePerKg, flatFee)
+└── java/com/tidewater/freight/
+    ├── ShippingCalculator.java      # Orchestrates rate lookup, ordered pricing rules, and HALF_UP rounding
+    ├── Demo.java                    # Console entry point demonstrating valid quotes and domain error reporting
+    ├── exception/                   # Unchecked domain exception hierarchy rooted at TidewaterException
+    │   ├── TidewaterException.java
+    │   ├── UnknownZoneException.java
+    │   ├── InvalidWeightException.java
+    │   ├── InvalidShipmentException.java
+    │   └── RateUnavailableException.java
+    ├── model/                       # Immutable, self-validating value types
+    │   ├── ServiceLevel.java
+    │   ├── ShipmentRequest.java
+    │   └── ZoneRate.java
+    ├── rate/                        # Rate lookup port and configurable in-memory adapter
+    │   ├── RateRepository.java
+    │   └── InMemoryRateRepository.java
+    └── pricing/                     # Single-responsibility pricing rules and default pipeline factory
+        ├── PricingRule.java
+        ├── DefaultPricingRules.java
+        ├── BasePriceRule.java
+        ├── ZoneFeeRule.java
+        ├── HeavyItemSurchargeRule.java
+        └── ServiceLevelRule.java
 ```
 
 ## How to Build, Test, and Run
